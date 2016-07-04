@@ -1,0 +1,169 @@
+<pre class="metadata">
+Title: Ambient Temperature (Thermometer) Sensor
+Level: 1
+Status: ED
+ED: https://w3c.github.io/thermometer/
+Shortname: thermometer
+TR: https://www.w3.org/TR/thermometer/
+Editor: Kenneth Christiansen 41974, Intel Corporation, https://intel.com/
+Group: dap
+Abstract:
+  This specification defines a concrete sensor interface to monitor
+  to measure the ambient temperature.
+Version History: https://github.com/w3c/thermometer/commits/gh-pages/index.bs
+!Bug Reports: <a href="https://www.github.com/w3c/thermometer/issues/new">via the w3c/thermometer repository on GitHub</a>
+Indent: 2
+Repository: w3c/thermometer
+Markup Shorthands: markdown on
+Inline Github Issues: true
+!Issue Tracking: <a href="https://github.com/w3c/thermometer/issues">Issues</a>
+!Test Suite: <a href="https://github.com/w3c/web-platform-tests/tree/master/thermometer">web-platform-tests on GitHub</a>
+Boilerplate: omit issues-index
+Default Biblio Status: current
+</pre>
+<pre class="anchors">
+urlPrefix: https://w3c.github.io/permissions/; spec: PERMISSIONS
+  type: dfn
+    text: permission; url: idl-def-Permission
+    text: associated PermissionDescriptor;  url: dfn-associated-permissiondescriptor
+urlPrefix: https://w3c.github.io/sensors; spec: GENERIC-SENSOR
+  type: dfn
+    text: high-level
+    text: sensor subclass
+    text: sensorreading subclass
+    text: default sensor
+    text: supported reporting mode; url: supported-reporting-modes
+    text: auto
+    text: construct a sensor object; url: construct-sensor-object
+</pre>
+
+Introduction {#intro}
+============
+
+The Temperature Sensor extends the Generic Sensor API [[GENERIC-SENSOR]]
+to provide information about the ambient temperature, as detected by the
+device's primary temperature sensor. 
+
+The temperature level is reported in either celsius, fahrenheit or kelvin
+and represents the local temperature level. Some devices, such as phones,
+might report inflated values due to the proximity of battery. 
+
+Examples {#examples}
+========
+
+<div class="example">
+    <pre highlight="js">
+    let sensor = new TemperatureSensor();
+    sensor.start();
+
+    sensor.onchange = event => console.log(event.reading.celsius);
+
+    sensor.onerror = function(event) {
+        console.log(event.error.name, event.error.message);
+    };
+    </pre>
+</div>
+
+Security and Privacy Considerations {#security-and-privacy}
+===================================
+
+There are no specific security and privacy considerations
+beyond those described in the Generic Sensor API [[!GENERIC-SENSOR]].
+
+Model {#model}
+=====
+
+The Temperature Sensor's associated <a>Sensor subclass</a>
+is the {{TemperatureSensor}} class.
+
+The Temperature Sensor's associated <a>SensorReading subclass</a>
+is the {{TemperatureSensorReading}} class.
+
+The Temperature Sensor has a <a>default sensor</a>,
+which is the device's main temperature detector.
+
+The Temperature Sensor has a single <a>supported reporting mode</a>
+which is "<a>auto</a>".
+
+The Temperature Sensor's <a>permission</a> name is `"temperature"`.
+It has no <a>associated PermissionDescriptor</a>.
+
+The Temperature Sensor has an associated abstract operation
+to <dfn>retrieve the sensor permission</dfn> which
+must simply return a <a>permission</a> whose name is "temperature".
+
+The Temperature Sensor has an associated abstract operation
+to <dfn lt="Construct SensorReading Object">construct a SensorReading object</dfn>
+which creates a new {{TemperatureSensorReading}} object and sets each of its
+<a attribute for="TemperatureSensorReading">celsius</a>,
+<a attribute for="TemperatureSensorReading">fahrenheit</a> and
+<a attribute for="TemperatureSensorReading">kelvin</a> attributes to
+positive infinity.
+
+<dfn>celsius</dfn> is a value that represents the the local ambient temperature. Its
+unit is degrees Celsius, also known as centigrade.
+
+<dfn>fahrenheit</dfn> is a value that represents the the local ambient temperature. Its
+unit is degrees Fahrenheit.
+
+<dfn>kelvin</dfn> is a value that represents the the local ambient temperature. Its
+unit is degrees Kelvin.
+
+
+API {#api}
+===
+
+The TemperatureSensor Interface {#temperature-sensor-interface}
+--------------------------------
+
+<pre class="idl">
+  [Constructor(optional SensorOptions sensorOptions)]
+  interface TemperatureSensor : Sensor {
+    readonly attribute TemperatureSensorReading? reading;
+  };
+</pre>
+
+To <dfn>Construct an TemperatureSensor Object</dfn> the user agent must invoke the
+<a>construct a Sensor object</a> abstract operation.
+
+The TemperatureSensorReading Interface {#temperature-sensor-reading-interface}
+---------------------------------------
+
+<pre class="idl">
+  [Constructor(TemperatureSensorReadingInit temperatureSensorReadingInit)]
+  interface TemperatureSensorReading : SensorReading {
+      readonly attribute unrestricted double? celsius;
+      readonly attribute unrestricted double? fahrenheit;
+      readonly attribute unrestricted double? kelvin;
+  };
+
+  dictionary TemperatureSensorReadingInit {
+    unrestricted double? celsius;
+    unrestricted double? fahrenheit;
+    unrestricted double? kelvin;
+  };
+</pre>
+
+### The TemperatureSensorReading constructor ### {#barometric-sensor-reading-constructor}
+
+### The celsius attribute ### {#barometric-sensor-reading-attribute-celsius}
+
+The <a attribute for="TemperatureSensorReading">celsius</a> attribute of the {{TemperatureSensorReading}}
+interface represents the local ambient temperature level in degree Celsius, also known
+as centigrade.
+
+### The fahrenheit attribute ### {#barometric-sensor-reading-attribute-fahrenheit}
+
+The <a attribute for="TemperatureSensorReading">fahrenheit</a> attribute of the {{TemperatureSensorReading}}
+interface represents the local ambient temperature level in degree Fahrenheit.
+
+### The kelvin attribute ### {#barometric-sensor-reading-attribute-kelvin}
+
+The <a attribute for="TemperatureSensorReading">kelvin</a> attribute of the {{TemperatureSensorReading}}
+interface represents the local ambient temperature level in degree Kelvin.
+
+
+Acknowledgements {#acknowledgements}
+================
+
+Tobie Langel for the work on Generic Sensor API.
